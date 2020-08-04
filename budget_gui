@@ -1,0 +1,90 @@
+import PySimpleGUI as sg
+from budget import *
+
+#define accounts
+
+
+#create list of names; call saved totals
+mains = []	#initialize list of names of main accounts
+subs = []	#initialize list of names of sub accounts
+
+mainaccts = [checking, saving]	#create list of main accounts INPUT LIST OF ALL MAIN ACCOUNTS HERE
+
+counter = 1	#create a counter index
+
+s2 = file.get_worksheet(1)
+
+for m in mainaccts:		#iterate through main accounts
+	mains.append(m.name)	#add name of main account
+	for s in m.subs:	#iterate through sub accounts
+		subs.append(s.name)	#add name of sub account
+		s.total = float(s2.row_values(counter)[1])	#set total of sub to last known total	
+		counter += 1				#iterate counter
+
+#create window
+vis = False
+
+sg.theme('TealMono')
+
+#layout of input box
+budget_layout = [
+	#transfer or transaction
+	[sg.Text('Action'), sg.Combo(values=['transaction','transfer'], change_submits=True, key='action')],
+	#1
+	[sg.Text('Transfer from', key='dep0', visible=vis)],
+	[sg.Text('Main account'), sg.Combo(values=mains, key='acct1main'),
+	sg.Text('Sub account'), sg.Combo(values=subs, key='acct1sub')],
+	#2
+	[sg.Text('Transfer to', key='dep1', visible=False)],
+	[sg.Text('Main account', key='dep2', visible=False), sg.Combo(values=mains, key='acct2main', visible=False),
+	sg.Text('Sub account', key='dep3', visible=False), 
+	sg.Combo(values=subs, key='acct2sub', visible=False)],
+	#the rest
+	[sg.Text('How much?'), sg.InputText(key='amount')],
+	[sg.Text('Description')],
+	[sg.InputText(key='desc')],
+	[sg.In(key='calen', enable_events=True, visible=False), sg.CalendarButton('Choose date', target='calen', key='cal')],
+	[sg.Submit(), sg.CButton('Cancel')]
+]
+
+#create input box, take input
+window = sg.Window('Budget', budget_layout, icon=r'C:\Users\Kalea\Documents\programs\budget\dollar_icon.ico', finalize=True)
+
+
+#listen for value of action and react
+while True:
+	event, values = window.read()
+	if event == sg.WIN_CLOSED:
+		break
+	if values['action'] == 'transaction':
+		vis = False
+	elif values['action'] == 'transfer':
+		vis = True
+	window['dep0'].Update(visible = vis)
+	window['dep1'].Update(visible = vis)
+	window['dep2'].Update(visible = vis)
+	window['acct2main'].Update(visible = vis)
+	window['dep3'].Update(visible = vis)
+	window['acct2sub'].Update(visible = vis)
+	if event in 'Submit':
+
+
+		#add the transaction/transfer
+		if values['action'] == 'transaction':
+			transac(eval(values['acct1sub']), float(values['amount']), values['desc'], eval(values['acct1main']), values['calen'])
+	
+		elif values['action'] == 'transfer':
+			transfer(eval(values['acct1sub']), eval(values['acct2sub']), float(values['amount']), values['desc'], eval(values['acct1main']), eval(values['acct2main']), values['calen'])
+
+		#add new total values to spreadsheet. this allows the program to keep total values between running.
+		c = 1
+		for m in mainaccts:		#iterate through main accounts
+			s2.update('C' + str(c), m.name)
+			s2.update('D' + str(c), m.tot())
+			for s in m.subs:	#iterate through sub accounts
+				s2.update('A' + str(c), s.name)	#set total of sub to last known total
+				s2.update('B' + str(c), s.total)
+				c += 1				#iterate counter
+		break
+#close input box
+window.close()
