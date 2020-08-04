@@ -8,7 +8,7 @@ from budget import *
 mains = []	#initialize list of names of main accounts
 subs = []	#initialize list of names of sub accounts
 
-mainaccts = [checking, saving]	#create list of main accounts INPUT LIST OF ALL MAIN ACCOUNTS HERE
+mainaccts = [checking, saving]	#create list of main accounts PUT ALL YOUR MAIN ACCOUNTS HERE
 
 counter = 1	#create a counter index
 
@@ -23,6 +23,8 @@ for m in mainaccts:		#iterate through main accounts
 
 #create window
 vis = False
+
+ic = r'<PATH TO ICON FILE>'
 
 sg.theme('TealMono')
 
@@ -48,7 +50,7 @@ budget_layout = [
 ]
 
 #create input box, take input
-window = sg.Window('Budget', budget_layout, icon=r'C:\Users\Kalea\Documents\programs\budget\dollar_icon.ico', finalize=True)
+window = sg.Window('Budget', budget_layout, icon=ic, finalize=True)
 
 
 #listen for value of action and react
