@@ -4,11 +4,15 @@ from budget import *
 #define accounts
 
 
+
+mainaccts = [checking, saving]	#create list of main accounts
+
+ic = r'<full path to dollar_icon>'
+
 #create list of names; call saved totals
 mains = []	#initialize list of names of main accounts
 subs = []	#initialize list of names of sub accounts
 
-mainaccts = [checking, saving]	#create list of main accounts PUT ALL YOUR MAIN ACCOUNTS HERE
 
 counter = 1	#create a counter index
 
@@ -23,8 +27,6 @@ for m in mainaccts:		#iterate through main accounts
 
 #create window
 vis = False
-
-ic = r'<PATH TO ICON FILE>'
 
 sg.theme('TealMono')
 
